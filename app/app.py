@@ -4,7 +4,6 @@ from pathlib import Path
 import base64
 import streamlit as st
 
-
 # =========================================================
 # Page config (MUST be the first Streamlit command)
 # =========================================================
@@ -14,14 +13,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
 # =========================================================
 # Paths / assets
 # =========================================================
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE / "assets"
 LOGO_IMG = ASSETS / "bioergotech_logo.png"
-
 
 # =========================================================
 # Helpers
@@ -33,25 +30,24 @@ def _read_as_base64(path: Path) -> str:
 def _render_logo(path: Path) -> None:
     if not path.exists():
         return
-    # Base64 embed avoids occasional relative-path issues on Streamlit Cloud
     b64 = _read_as_base64(path)
     st.markdown(
         f"""
         <div style="padding: 6px 0 14px 0;">
-            <img src="data:image/png;base64,{b64}" style="width:100%; max-width: 240px; height:auto;" />
+            <img src="data:image/png;base64,{b64}"
+                 style="width:100%; max-width: 240px; height:auto;" />
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-
 # =========================================================
-# Global CSS: strict black & white theme + hide Streamlit footer
+# Global CSS: hard black/white + force sidebar nav styling
 # =========================================================
 st.markdown(
     """
     <style>
-    /* Hard force black/white across app */
+    /* Base */
     html, body, .stApp {
         background: #ffffff !important;
         color: #000000 !important;
@@ -60,7 +56,7 @@ st.markdown(
         font-size: 18px !important;
     }
 
-    /* Main content container */
+    /* Main container */
     .block-container {
         padding-top: 0.9rem !important;
         padding-bottom: 1.8rem !important;
@@ -68,63 +64,95 @@ st.markdown(
         background: #ffffff !important;
     }
 
-    /* Sidebar: white background, no gradient */
+    /* Sidebar wrapper */
     section[data-testid="stSidebar"] {
         background: #ffffff !important;
-        border-right: 1px solid rgba(0,0,0,0.12) !important;
+        border-right: 1px solid rgba(0,0,0,0.20) !important;
     }
+
     section[data-testid="stSidebar"] .block-container {
+        background: #ffffff !important;
         padding-top: 1.2rem !important;
-        background: #ffffff !important;
     }
 
-    /* Sidebar font sizing */
+    /* Force all sidebar text black */
     section[data-testid="stSidebar"] * {
-        font-size: 19px !important;
+        color: #000000 !important;
+        font-size: 18px !important;
         line-height: 1.55 !important;
-        color: #000000 !important;
-    }
-    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a {
-        font-size: 20px !important;
-        font-weight: 650 !important;
-        color: #000000 !important;
-    }
-    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a[aria-current="page"] {
-        text-decoration: underline !important;
+        background: transparent !important;
     }
 
-    /* Simple sidebar banner (black/white) */
-    .sidebar-banner {
+    /* Sidebar navigation container */
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] {
         background: #ffffff !important;
-        border: 1px solid rgba(0,0,0,0.15) !important;
-        border-radius: 16px;
-        padding: 18px;
-        margin-bottom: 16px;
-    }
-    .sidebar-banner h3 {
-        margin: 0 0 6px 0;
-        font-size: 1.35rem;
-        font-weight: 800;
-        color: #000000 !important;
-    }
-    .sidebar-banner p {
-        margin: 0;
-        font-size: 1.05rem;
-        color: rgba(0,0,0,0.70) !important;
     }
 
-    /* Hide the first nav item (main script entry) */
+    /* Nav list items */
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] ul,
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] li {
+        background: #ffffff !important;
+    }
+
+    /* Nav links (normal) */
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a {
+        color: #000000 !important;
+        background: #ffffff !important;
+        border-radius: 10px !important;
+        font-weight: 650 !important;
+        padding: 10px 12px !important;
+        margin: 2px 0 !important;
+        text-decoration: none !important;
+        border: 1px solid transparent !important;
+    }
+
+    /* Nav links hover */
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a:hover {
+        background: #f3f4f6 !important;
+        border: 1px solid rgba(0,0,0,0.15) !important;
+    }
+
+    /* Active page (selected) */
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a[aria-current="page"] {
+        background: #000000 !important;
+        color: #ffffff !important;
+        border: 1px solid #000000 !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a[aria-current="page"] * {
+        color: #ffffff !important;
+    }
+
+    /* Hide the first nav item ("app") */
     section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] ul li:first-child {
         display: none !important;
     }
 
+    /* Simple sidebar banner */
+    .sidebar-banner {
+        background: #ffffff !important;
+        border: 1px solid rgba(0,0,0,0.20) !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
+        margin-bottom: 16px !important;
+    }
+    .sidebar-banner h3 {
+        margin: 0 0 6px 0 !important;
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
+        color: #000000 !important;
+    }
+    .sidebar-banner p {
+        margin: 0 !important;
+        font-size: 1.0rem !important;
+        color: rgba(0,0,0,0.75) !important;
+    }
+
     /* Hide Streamlit footer */
-    footer { visibility: hidden; }
+    footer { visibility: hidden !important; }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
 
 # =========================================================
 # Sidebar content
@@ -139,17 +167,16 @@ with st.sidebar:
             <p>
                 Use the pages below:
                 <br>• <b>Patient Input</b>
-                <br>• <b>Results &amp; Visual Analytics</b>
+                <br>• <b>Results &amp; Analytics</b>
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.caption("Start with Patient Input, then review Results & Visual Analytics.")
-
+    st.caption("Start with Patient Input, then review Results & Analytics.")
 
 # =========================================================
-# Redirect to Patient Input (removes need for a visible Home page)
+# Redirect straight to Patient Input
 # =========================================================
 st.switch_page("pages/1_Patient_Input.py")
